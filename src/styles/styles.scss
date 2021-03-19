@@ -1,0 +1,84 @@
+@import './_variables.scss';
+
+body { background-color: #24292E; }
+h1 { font-size: 30px; }
+a { color: $gold; &:hover { color: $goldHover; } }
+input.form-control {
+  border: none;
+  border-radius: 50px;
+  &:focus { box-shadow: 0 0 0 0.2rem rgba(189, 111, 241, 0.5); }
+}
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  color: white;
+}
+
+.howdy { word-break: break-word; }
+
+.psst {
+  font-size: 10px;
+  font-style: italic;
+  color: rgba(238, 238, 238, 0.75);
+  margin: 10px 0 0;
+}
+
+.text-danger {
+  display: inline;
+  padding: 0 5px;
+}
+
+$red: #F06A73;
+$redHover: rgb(204, 90, 98);
+.pbj-btn-red {
+  font-size: 18px;
+  color: white;
+  margin: 10px 0;
+  padding: 5px 15px;
+  border-radius: 50px;
+  background-color: #F06A73;
+  border-color: #F06A73;
+  &:hover, &:active {
+    color: rgba(255, 255, 255, 0.75);
+    background-color: $redHover;
+    border-color: $red;
+    &:focus { box-shadow: 0 0 0 0.2rem rgba(240, 106, 115, 0.5) !important; }
+  }
+  &:focus { box-shadow: 0 0 0 0.2rem rgba(240, 106, 115, 0.5) !important; }
+}
+
+// PBJ BTNS =========================
+.pbj-btn {
+  font-size: 18px;
+  color: white;
+  margin: 10px 0;
+  padding: 5px 15px;
+  border-radius: 50px;
+  background-color: $purple;
+  border-color: $purple;
+  &:hover, &:active {
+    color: rgba(255, 255, 255, 0.75);
+    background-color: $purpleHover;
+    border-color: $purple;
+  }
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(189, 111, 241, 0.5) !important;
+  }
+}
+
+.pbj-btn-gold {
+  font-size: 18px;
+  color: white;
+  margin: 10px 0;
+  padding: 5px 15px;
+  border-radius: 50px;
+  background-color: $gold;
+  border-color: $gold;
+  &:hover, &:active {
+    color: rgba(255, 255, 255, 0.75);
+    background-color: $goldHover;
+    border-color: $gold;
+  }
+  &:focus { box-shadow: 0 0 0 0.2rem rgba(199, 170, 116, 0.5) !important; }
+}
