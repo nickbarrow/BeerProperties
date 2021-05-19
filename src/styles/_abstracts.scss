@@ -1,0 +1,30 @@
+.underline-trigger {
+  cursor: pointer;
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+
+  &:hover {
+    .underline {
+      width: 100%;
+      opacity: 1;
+    }
+  }
+
+}
+
+.underline {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background-color: white;
+  opacity: 0;
+  transition: all ease-out .5s;
+}

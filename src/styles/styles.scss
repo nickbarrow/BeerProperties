@@ -1,84 +1,329 @@
 @import './_variables.scss';
+@import './_abstracts.scss';
+@import './_nav.scss';
+@import './_home.scss';
+@import './_uploadForm.scss';
 
-body { background-color: #24292E; }
-h1 { font-size: 30px; }
-a { color: $gold; &:hover { color: $goldHover; } }
-input.form-control {
-  border: none;
-  border-radius: 50px;
-  &:focus { box-shadow: 0 0 0 0.2rem rgba(189, 111, 241, 0.5); }
+.bg-info {
+  background-color: rgba(53, 184, 224, 0.5) !important;
 }
 
+* {
+  box-sizing: border-box;
+  // font-family: 'Lexend', sans-serif;
+  font-family: Helvetica, Arial, sans-serif
+}
+body {
+  padding: 0;
+  margin: 0;
+}
+h1 { font-size: 30px; margin: 0; }
+a:hover { text-decoration: none; }
 .App {
   font-family: sans-serif;
   text-align: center;
-  color: white;
+  height: 100%;
 }
 
-.howdy { word-break: break-word; }
-
-.psst {
-  font-size: 10px;
-  font-style: italic;
-  color: rgba(238, 238, 238, 0.75);
-  margin: 10px 0 0;
+.back {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 5px;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
 }
 
-.text-danger {
-  display: inline;
-  padding: 0 5px;
-}
+// GALLERY ===========================
+.gallery {
+  height: 100%;
+  padding: 0px;
+  padding-top: $navHeight + 20px;
 
-$red: #F06A73;
-$redHover: rgb(204, 90, 98);
-.pbj-btn-red {
-  font-size: 18px;
-  color: white;
-  margin: 10px 0;
-  padding: 5px 15px;
-  border-radius: 50px;
-  background-color: #F06A73;
-  border-color: #F06A73;
-  &:hover, &:active {
-    color: rgba(255, 255, 255, 0.75);
-    background-color: $redHover;
-    border-color: $red;
-    &:focus { box-shadow: 0 0 0 0.2rem rgba(240, 106, 115, 0.5) !important; }
+  p { text-transform: none; }
+
+  .carousel {
+    height: 220px;
+
+    .carousel-inner {
+      height: 100%;
+
+      .carousel-item {
+        height: 100%;
+        
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+        }
+    
+        a { color: white; }
+      }
+    }
   }
-  &:focus { box-shadow: 0 0 0 0.2rem rgba(240, 106, 115, 0.5) !important; }
+
+  .card-grid {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    padding: 0 20px;
+
+    @media (min-width: 700px) { padding: 0 50px; }
+
+    .card {
+      width: 100%;
+      margin: 20px 0;
+      overflow: hidden;
+      
+      @media (min-width: 700px) { width: 49%; }
+      @media (min-width: 1000px) { width: 32%; }
+      @media (min-width: 1450px) { width: 22.5%; }
+      @media (min-width: 1900px) { width: 18%; }
+
+      .br-pill {
+        background-color: rgba(30, 143, 255, 0.5);
+        border-radius: 50px;
+        display: inline-block;
+        padding: 2px 8px;
+      }
+      .ba-pill {
+        background-color: rgba(255, 176, 30, 0.75);
+        border-radius: 50px;
+        display: inline-block;
+        padding: 2px 8px;
+      }
+
+      .card-body-fade {
+        position: relative;
+        line-height: 1.2em;
+        height: 3.6em; /* exactly three lines */
+        overflow: hidden;
+      }
+      .card-body-fade:after {
+        content: "";
+        text-align: right;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 70%;
+        height: 1.2em;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 50%);
+      }
+    }
+  }
 }
 
-// PBJ BTNS =========================
-.pbj-btn {
-  font-size: 18px;
-  color: white;
-  margin: 10px 0;
-  padding: 5px 15px;
-  border-radius: 50px;
-  background-color: $purple;
-  border-color: $purple;
-  &:hover, &:active {
-    color: rgba(255, 255, 255, 0.75);
-    background-color: $purpleHover;
-    border-color: $purple;
-  }
-  &:focus {
-    box-shadow: 0 0 0 0.2rem rgba(189, 111, 241, 0.5) !important;
+// PROPERTY ==========================
+.property {
+  padding: $navHeight 20px 0;
+  height: 100%;
+  background-color: white;
+
+  .property-container {
+    // border-radius: 10px;
+    overflow: hidden;
+
+    .property-header {
+      display: flex;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+
+      @media (min-width: 800px) {
+        flex-direction: row;
+        .carousel { width: 65%; }
+        .property-header-details { width: 35%; }
+      }
+
+      .carousel {
+        background-color: rgba(0, 0, 0, 0.1);
+        height: 400px;
+
+        .carousel-inner {
+          height: 100%;
+
+          .carousel-item {
+            height: 100%;
+
+            img {
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+      }
+
+      .property-header-details {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+
+    .property-details {
+      display: flex;
+      flex-direction: row;
+
+      .accordion {
+        text-align: left;
+        margin-top: 20px;
+        border-radius: 0px;
+        width: 100%;
+  
+        .card {
+          border-radius: 0px;
+  
+          .card-header {
+            cursor: pointer;
+            font-size: 30px;
+            font-weight: bold;
+            transition: all ease .2s;
+            &:hover { color: dodgerblue; }
+          }
+        }
+      }
+    }
   }
 }
 
-.pbj-btn-gold {
-  font-size: 18px;
-  color: white;
-  margin: 10px 0;
-  padding: 5px 15px;
-  border-radius: 50px;
-  background-color: $gold;
-  border-color: $gold;
-  &:hover, &:active {
-    color: rgba(255, 255, 255, 0.75);
-    background-color: $goldHover;
-    border-color: $gold;
+// ADMIN =============================
+.admin {
+  padding: 20px;
+  padding-top: $navHeight + 20px;
+  height: 100%;
+  overflow-y: auto;
+
+  .jumbotron {
+    color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(233, 236, 239, 0.85);
+    backdrop-filter: blur(10px);
   }
-  &:focus { box-shadow: 0 0 0 0.2rem rgba(199, 170, 116, 0.5) !important; }
+
+  .properties {
+    text-align: left;
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+
+      .card-header { 
+        background-color: rgba(255, 255, 255, 0.3);
+        padding: 5px;
+        font-size: 24px;
+        cursor: pointer;
+        &:hover { &:after { opacity: 1; } }
+
+        .property-thumbnail {
+          height: 75px;
+          width: 75px;
+          object-fit: cover;
+          border-radius: 50px;
+          margin: 10px 20px 10px;
+        }
+
+        &:after {
+          content: 'Expand';
+          color: gray;
+          margin-left: 20px;
+          opacity: 0;
+          transition: all ease .3s;
+        }
+      }
+
+      .card-body {
+        display: flex;
+        flex-direction: column;
+
+        .property-image {
+          width: 100%;
+          margin: 0 auto 15px;
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+
+}
+
+.add-property-form {
+  
+  .img-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 5px;
+    background-color: dodgerblue;
+  }
+
+  .uploading-images {
+    padding: 5px 0;
+    margin-bottom: 20px;
+
+    .uploading-image-container {
+      position: relative;
+
+      .uploading-image {
+        background-color: rgba(238, 238, 238, 0.3);
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        padding: 2px;
+        border-radius: 5px;
+        width: 15vw;
+        height: 15vw;
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: cover;
+        margin: 10px;
+      }
+  
+      .cancel-image {
+        background-color: #e62121;
+        height: 20px;
+        width: 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        position: absolute;
+        top: 0px;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        transition: all ease .1s;
+        &:hover { transform: scale(1.2); }
+      }
+    }
+  }
+}
+
+// LOGIN =============================
+.login {
+  padding: 20px;
+  padding-top: $navHeight + 20px;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+// FOOTER ============================
+.beer-footer {
+  margin-top: 20px;
+  border-top: 3px solid #ddd;
+  background-color: #eee;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  img {
+    width: 90%;
+    max-width: 200px;
+  }
+
+  @media (min-width: 700px) {
+    flex-direction: row;
+
+    img {  }
+  }
 }

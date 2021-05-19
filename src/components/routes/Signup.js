@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { createUser, signInWithGoogle } from "../../../utils/FireAuth";
+import { createUser, signInWithGoogle } from "../../utils/FireAuth";
 
 export default function Login() {
   const [email, setEmail] = useState("");

@@ -1,51 +1,55 @@
-import React, { Component } from 'react';
-import { Route, BrowserRouter as Router, Switch
-} from 'react-router-dom';
+import React from 'react'
+import {
+  Redirect,
+  Route,
+  BrowserRouter as Router,
+  Switch
+} from 'react-router-dom'
 // Utils
-import { auth } from '../utils/Firebase'
-import AnonRoute from '../utils/AnonRoute'
+import { auth } from './utils/Firebase'
+import AnonRoute from './utils/AnonRoute'
+import PrivateRoute from './utils/PrivateRoute'
+import { AnimatePresence } from 'framer-motion'
+
 // Routes
-import Home from './components/routes/Home';
-import Login from './components/routes/Login';
-import Signup from './components/routes/Signup';
+import Home from './components/routes/Home'
+import Admin from './Admin'
+import Login from './components/routes/Login'
+import Signup from './components/routes/Signup'
+import Gallery from './components/routes/Gallery'
+import Property from './Property'
 
-export default class Routes extends Component {
-  constructor(props) {
-    super(props);
+import BeerNav from './components/display/BeerNav'
+import BeerFooter from './components/display/BeerFooter'
 
-    this.state = {
-      user: null
-    }
+export default function Routes() {
 
-    // Use to prevent memory leaks on component unmount.
-    this._isMounted = false;
-  }
+  return (
+    <Router>
+      <BeerNav />
 
-  updateCurrentUser = (user) => {
-    this._isMounted && this.setState({ user })
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-    this._isMounted && auth().onAuthStateChanged(user => {
-      this.updateCurrentUser(user);
-    });
-  }
-
-  componentWillUnmount()  {
-    this._isMounted = false;
-  }
-
-  render () {
-    return (
-      <Router>
+      <AnimatePresence>
         <Switch>
           <Route exact path="/" component={Home} />
 
-          <AnonRoute path="/login" auth={this.state.user} component={Login} />
-          <AnonRoute path="/signup" auth={this.state.user} component={Signup} />
+          <Route path="/gallery" component={Gallery} />
+          <Route path="/p/:id" component={Property} />
+
+          <PrivateRoute path="/admin" component={Admin} />
+
+          <Route path="/logout"
+            render={() => {
+              auth.signOut()
+              return <Redirect to="/" />
+            }}
+          />
+
+          <AnonRoute path="/login" component={Login} />
+          <AnonRoute path="/signup" component={Signup} />
         </Switch>
-      </Router>
-    );
-  }
+
+        <BeerFooter />
+      </AnimatePresence>
+    </Router>
+  )
 }
