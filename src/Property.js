@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { firestore } from './utils/Firebase'
 import { motion } from 'framer-motion'
 import { useParams } from 'react-router-dom'
@@ -27,82 +28,92 @@ export default function Property(props) {
   }, [])
 
   return (
-    <motion.div className="property">
-      <Link to="/gallery" className="back">
-        <i class="fas fa-long-arrow-alt-left"></i> <span>Back to Listings</span>
-      </Link>
-      {property ? (
-        <motion.div
-          className="property-container"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}>
-          {props.auth && <div className="edit-property">Edit</div>}
+    <>
+      <Helmet>
+        <meta property="og:url"                content="http://www.nytimes.com/2015/02/19/arts/international/when-great-minds-dont-think-alike.html" />
+        <meta property="og:type"               content="article" />
+        <meta property="og:title"              content={ property?.title || ''} />
+        <meta property="og:description"        content={ property?.desc || ''} />
+        <meta property="og:image"              content={ property?.imageURLs[0] || '' } />
+      </Helmet>
+      
+      <motion.div className="property">
+        <Link to="/gallery" className="back">
+          <i class="fas fa-long-arrow-alt-left"></i> <span>Back to Listings</span>
+        </Link>
+        {property ? (
+          <motion.div
+            className="property-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}>
+            {props.auth && <div className="edit-property">Edit</div>}
 
-          <div className="property-header">
-            <BeerCarousel gallery={property.imageURLs} text="false" />
-            <div className="property-header-details">
-              <h1 className="font-weight-bold m-2">{property.title}</h1>
-              <p className="property-subhead">
-                <span className="rounded-pill bg-warning px-2 mr-2">
-                  <b>{property.br}</b> br
-                </span>
-                <span className="rounded-pill bg-warning px-2 mr-2">
-                  <b>{property.ba}</b> ba
-                </span>
-                <span className="rounded-pill bg-info px-2 mr-2">
-                  1600 sq ft
-                </span>
-              </p>
-              <p>
-                $130,000
-                <br />
-                <span>Est. Payment: $500/mo</span>
-              </p>
+            <div className="property-header">
+              <BeerCarousel gallery={property.imageURLs} text="false" />
+              <div className="property-header-details">
+                <h1 className="font-weight-bold m-2">{property.title}</h1>
+                <p className="property-subhead">
+                  <span className="rounded-pill bg-warning px-2 mr-2">
+                    <b>{property.br}</b> br
+                  </span>
+                  <span className="rounded-pill bg-warning px-2 mr-2">
+                    <b>{property.ba}</b> ba
+                  </span>
+                  <span className="rounded-pill bg-info px-2 mr-2">
+                    1600 sq ft
+                  </span>
+                </p>
+                <p>
+                  $130,000
+                  <br />
+                  <span>Est. Payment: $500/mo</span>
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="property-details">
-            <Accordion defaultActiveKey="0">
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="0">
-                  Details
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="0">
-                  <Card.Body>{property.desc}</Card.Body>
-                </Accordion.Collapse>
-              </Card>
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="1">
-                  Amenities
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>Air Conditioning</Card.Body>
-                </Accordion.Collapse>
-              </Card>
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="2">
-                  Contact
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="2">
-                  <Card.Body>
-                    <p>
-                      Call for more details:
-                      <br />
-                      <b>(555) 555-5555</b>
-                      <br />
-                      Or email:
-                      <br />
-                      <b>availability@beerpropertiesinc.com</b>
-                    </p>
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          </div>
-        </motion.div>
-      ) : (
-        '🔄 Loading...'
-      )}
-    </motion.div>
+            <div className="property-details">
+              <Accordion defaultActiveKey="0">
+                <Card>
+                  <Accordion.Toggle as={Card.Header} eventKey="0">
+                    Details
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="0">
+                    <Card.Body>{property.desc}</Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+                <Card>
+                  <Accordion.Toggle as={Card.Header} eventKey="1">
+                    Amenities
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="1">
+                    <Card.Body>Air Conditioning</Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+                <Card>
+                  <Accordion.Toggle as={Card.Header} eventKey="2">
+                    Contact
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="2">
+                    <Card.Body>
+                      <p>
+                        Call for more details:
+                        <br />
+                        <b>(555) 555-5555</b>
+                        <br />
+                        Or email:
+                        <br />
+                        <b>availability@beerpropertiesinc.com</b>
+                      </p>
+                    </Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+              </Accordion>
+            </div>
+          </motion.div>
+        ) : (
+          '🔄 Loading...'
+        )}
+      </motion.div>
+    </>
   )
 }

@@ -10,9 +10,6 @@ import BeerCarousel from '../display/BeerCarousel'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import Modal from 'react-bootstrap/Modal'
-import InputGroup from 'react-bootstrap/InputGroup'
-import Form from 'react-bootstrap/Form'
-
 import UploadModal from '../UploadModal'
 
 export default function Gallery() {
@@ -158,7 +155,7 @@ export default function Gallery() {
       {user && (
         <Button
           variant="outline-success"
-          style={{width: "90%"}}
+          style={{width: "100%"}}
           onClick={() => { setShowModal(true) }}>
           Upload
         </Button>
