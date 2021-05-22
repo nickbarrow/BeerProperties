@@ -19,6 +19,8 @@ export default function Gallery() {
   var user = useContext(UserContext)
   // Modal display state
   const [showModal, setShowModal] = useState(false)
+  const [editingItem, setEditingItem] = useState(false)
+
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   // Image upload progress bar
   const [imageUploadProgress, setImageUploadProgress] = useState(100)
@@ -27,7 +29,6 @@ export default function Gallery() {
   const [imageNames, setImageNames] = useState([])
   const [imageURLs, setImageURLs] = useState([])
   const [uploadForm, setUploadForm] = useState({})
-  const [editingItem, setEditingItem] = useState(false)
   const [deletingItem, setDeletingItem] = useState(null)
 
   useEffect(() => {
@@ -125,16 +126,17 @@ export default function Gallery() {
 
   // Set form state when editing existing item.
   const editItem = (item) => {
-    console.log(item)
-    setUploadForm({
-      title: item.title,
-      desc: item.desc,
-      br: item.br,
-      ba: item.ba,
-      price: item.price
-    })
-    setImageNames(item.imageNames)
-    setImageURLs(item.imageURLs)
+    // console.log(item)
+    // setUploadForm({
+    //   title: item.title,
+    //   desc: item.desc,
+    //   br: item.br,
+    //   ba: item.ba,
+    //   price: item.price
+    // })
+    // setImageNames(item.imageNames)
+    // setImageURLs(item.imageURLs)
+    // setEditingItem(item)
     setEditingItem(item)
     setShowModal(true)
   }
@@ -153,18 +155,16 @@ export default function Gallery() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}>
+      {user && (
+        <Button
+          variant="outline-success"
+          style={{width: "90%"}}
+          onClick={() => { setShowModal(true) }}>
+          Upload
+        </Button>
+      )}
       {items ? (
         <motion.div className="card-grid">
-          {user && (
-            <Button
-              variant="outline-success"
-              className="w-100"
-              onClick={() => {
-                setShowModal(true)
-              }}>
-              Upload
-            </Button>
-          )}
 
           {items.map((item, index) => {
             return (
@@ -217,7 +217,7 @@ export default function Gallery() {
       )}
 
       {/* Property Edit/Upload Modal */}
-      <UploadModal show={'true'} />
+      <UploadModal show={showModal} setShowModal={setShowModal} editingItem={editingItem} />
       {/* <Modal
         show={showModal}
         onHide={() => {

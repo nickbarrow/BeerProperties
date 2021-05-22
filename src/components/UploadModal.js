@@ -16,11 +16,25 @@ export default function UploadModal(props) {
   const [imageUploadProgress, setImageUploadProgress] = useState(100)
 
   const [items, setItems] = useState([])
-  const [imageNames, setImageNames] = useState([])
-  const [imageURLs, setImageURLs] = useState([])
-  const [uploadForm, setUploadForm] = useState({})
-  const [editingItem, setEditingItem] = useState(false)
+  const [imageNames, setImageNames] = useState(props.editingItem.imageNames || [])
+  const [imageURLs, setImageURLs] = useState(props.editingItem.imageURLs || [])
+  const [uploadForm, setUploadForm] = useState({
+    imageNames: [],
+    imageURLs: [],
+    title: '',
+    details: '',
+    br: 0,
+    ba: 0,
+    price: 0
+  })
+  const [editingItem, setEditingItem] = useState(props.editingItem || false)
   const [deletingItem, setDeletingItem] = useState(null)
+
+  useEffect(() => {
+    if (props.editingItem) {
+      setUploadForm(props.editingItem)
+    }
+  }, [props.editingItem])
 
   const handleUploadProgress = (progress) => setImageUploadProgress(progress)
   // Don't listen to 'filename', he is a LIAR.
@@ -28,26 +42,44 @@ export default function UploadModal(props) {
   const handleImageUploadSuccess = async (filename, task) => {
     var fileName = task.snapshot.ref.name
     var link = await store.ref('images').child(fileName).getDownloadURL()
-    setImageNames((old) => [...old, fileName])
-    setImageURLs((old) => [...old, link])
+
+
+    let newForm = uploadForm
+    newForm.imageNames.push(fileName)
+    newForm.imageURLs.push(link)
+    
+    setUploadForm(newForm)
     setImageUploadProgress(0)
+
+    if (props.editingItem)
+      await firestore.collection('properties').doc(props.editingItem.id).set(newForm)
   }
   // I hope to God I never have to touch this function again
+  // Actually this aint bad. still stinky tho
   const cancelUploadImage = async (imageURL) => {
     // Get file name by image URL for deletion
-    let name = imageNames.find((n) => imageURL.includes(n))
+    // let name = imageNames.find((n) => imageURL.includes(n))
+    let name = uploadForm.imageNames.find(n => imageURL.includes(n))
 
     // Filter out deleting file name and URL
-    setImageNames(
-      imageNames.filter((img) => {
-        return img !== name
-      })
-    )
-    setImageURLs(
-      imageURLs.filter((url) => {
-        return url !== imageURL
-      })
-    )
+    // setImageNames(
+    //   imageNames.filter((img) => {
+    //     return img !== name
+    //   })
+    // )
+    // setImageURLs(
+    //   imageURLs.filter((url) => {
+    //     return url !== imageURL
+    //   })
+    // )
+    let newForm = uploadForm
+    newForm.imageNames = newForm.imageNames.filter((img) => { return img !== name })
+    newForm.imageURLs = newForm.imageURLs.filter((url) => { return url !== imageURL })
+    setUploadForm(newForm)
+
+    if (props.editingItem)
+      await firestore.collection('properties').doc(props.editingItem.id).set(newForm)
+    
     await store
       .ref()
       .child(`images/${name}`)
@@ -64,7 +96,15 @@ export default function UploadModal(props) {
     setUploadForm(newForm)
   }
   const handleCancelUpload = async () => {
-    wipeForm()
+    if (!editingItem) {
+      // Cleanup any uploaded images first to preserve storage
+      imageURLs.forEach(url => cancelUploadImage(url))
+      wipeForm()
+      props.setShowModal(false)
+    } else {
+      wipeForm()
+      props.setShowModal(false)
+    }
   }
   const wipeForm = () => {
     setUploadForm({
@@ -103,7 +143,7 @@ export default function UploadModal(props) {
   }
 
   return (
-    <Modal show={props.show}>
+    <Modal show={props.show} onHide={() => props.setShowModal(false)}>
       <Modal.Header closeButton>
         <Modal.Title>Add/Edit a Property</Modal.Title>
       </Modal.Header>
@@ -111,9 +151,8 @@ export default function UploadModal(props) {
       <Modal.Body>
         <div className="add-property-form">
           
-          <label>Upload Image(s)</label>
           <div className="">
-            <label className="image-upload-btn">
+            <label className="img-upload-label">
               {/* Upload Image(s) */}
                 <FileUploader
                 hidden
@@ -128,6 +167,8 @@ export default function UploadModal(props) {
                   console.log(error)
                 }}
               />
+              <div className="img-upload-btn"></div>
+              <p>Upload Image(s)</p>
             </label>
             <div
               className="img-progress"
@@ -135,7 +176,7 @@ export default function UploadModal(props) {
           </div>
 
           <div className="uploading-images">
-            {imageURLs.map((src, index) => {
+            {uploadForm.imageURLs?.map((src, index) => {
               return (
                 <div className="uploading-image-container d-inline-block">
                   <img className="uploading-image" src={src} />
