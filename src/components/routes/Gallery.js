@@ -17,15 +17,8 @@ export default function Gallery() {
   // Modal display state
   const [showModal, setShowModal] = useState(false)
   const [editingItem, setEditingItem] = useState(false)
-
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
-  // Image upload progress bar
-  const [imageUploadProgress, setImageUploadProgress] = useState(100)
-
   const [items, setItems] = useState([])
-  const [imageNames, setImageNames] = useState([])
-  const [imageURLs, setImageURLs] = useState([])
-  const [uploadForm, setUploadForm] = useState({})
   const [deletingItem, setDeletingItem] = useState(null)
 
   useEffect(() => {
@@ -42,105 +35,12 @@ export default function Gallery() {
       })
       setItems(tmpItems)
     })
-  }, [uploadForm, imageURLs])
-
-  const wipeForm = () => {
-    setUploadForm({
-      title: '',
-      desc: '',
-      br: 0,
-      ba: 0,
-      price: 0
-    })
-  }
-  const handleUpload = async () => {
-    if (editingItem) {
-      await firestore.collection('properties').doc(editingItem.id).set({
-        title: uploadForm.title,
-        desc: uploadForm.desc,
-        br: uploadForm.br,
-        ba: uploadForm.ba,
-        price: uploadForm.price,
-        imageNames,
-        imageURLs
-      })
-    } else {
-      await firestore.collection('properties').add({
-        title: uploadForm.title,
-        desc: uploadForm.desc,
-        br: uploadForm.br,
-        ba: uploadForm.ba,
-        price: uploadForm.price,
-        imageNames,
-        imageURLs
-      })
-    }
-    setShowModal(false)
-    wipeForm()
-    setEditingItem(false)
-  }
-  const handleCancelUpload = async () => {
-    setShowModal(false)
-    wipeForm()
-  }
-
-  // Don't listen to 'filename', he is a LIAR.
-  // Trust 'fileName', he is the real file name 🧠
-  const handleImageUploadSuccess = async (filename, task) => {
-    var fileName = task.snapshot.ref.name
-    var link = await store.ref('images').child(fileName).getDownloadURL()
-    setImageNames((old) => [...old, fileName])
-    setImageURLs((old) => [...old, link])
-    setImageUploadProgress(0)
-  }
-  const handleUploadProgress = (progress) => setImageUploadProgress(progress)
-  // I hope to God I never have to touch this function again
-  const cancelUploadImage = async (imageURL) => {
-    // Get file name by image URL for deletion
-    let name = imageNames.find((n) => imageURL.includes(n))
-
-    // Filter out deleting file name and URL
-    setImageNames(
-      imageNames.filter((img) => {
-        return img !== name
-      })
-    )
-    setImageURLs(
-      imageURLs.filter((url) => {
-        return url !== imageURL
-      })
-    )
-    await store
-      .ref()
-      .child(`images/${name}`)
-      .delete()
-      .catch((err) => {
-        // We don't really care because the only reason
-        // this would fail (probably), is if the image
-        // was already deleted
-      })
-  }
+  }, [])
 
   // Set form state when editing existing item.
-  const editItem = (item) => {
-    // console.log(item)
-    // setUploadForm({
-    //   title: item.title,
-    //   desc: item.desc,
-    //   br: item.br,
-    //   ba: item.ba,
-    //   price: item.price
-    // })
-    // setImageNames(item.imageNames)
-    // setImageURLs(item.imageURLs)
-    // setEditingItem(item)
+  const editItem = item => {
     setEditingItem(item)
     setShowModal(true)
-  }
-  const handleFormChange = (value, property) => {
-    let newForm = { ...uploadForm }
-    newForm[property] = value
-    setUploadForm(newForm)
   }
 
   const deleteProperty = async () =>
@@ -162,7 +62,6 @@ export default function Gallery() {
       )}
       {items ? (
         <motion.div className="card-grid">
-
           {items.map((item, index) => {
             return (
               <Card key={index}>
@@ -178,7 +77,7 @@ export default function Gallery() {
                   <p className="br-pill mr-2">{item.br}br</p>
                   <p className="ba-pill">{item.ba}ba</p>
                   <Card.Text>
-                    <div className="card-body-fade">{item.desc}</div>
+                    <span className="card-body-fade">{item.desc}</span>
                   </Card.Text>
                 </Card.Body>
                 <Card.Footer>
@@ -213,138 +112,14 @@ export default function Gallery() {
         '🔄 Loading...'
       )}
 
-      {/* Property Edit/Upload Modal */}
-      <UploadModal show={showModal} setShowModal={setShowModal} editingItem={editingItem} />
-      {/* <Modal
-        show={showModal}
-        onHide={() => {
-          setShowModal(false)
-        }}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add/Edit a Property</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <div className="add-property-form">
-            <div className="">
-              <label className="btn btn-success w-100">
-                Upload Image(s)
-                <FileUploader
-                  hidden
-                  multiple
-                  accept="image/*"
-                  name="propertyImg"
-                  randomizeFilename
-                  storageRef={store.ref('images')}
-                  onProgress={handleUploadProgress}
-                  onUploadSuccess={handleImageUploadSuccess}
-                  onError={(error) => {
-                    console.log(error)
-                  }}
-                />
-              </label>
-              <div
-                className="img-progress"
-                style={{ width: imageUploadProgress + '%' }}></div>
-            </div>
-
-            <div className="uploading-images">
-              {imageURLs.map((src, index) => {
-                return (
-                  <div className="uploading-image-container d-inline-block">
-                    <img className="uploading-image" src={src} />
-                    <div
-                      className="cancel-image"
-                      onClick={() => {
-                        cancelUploadImage(src)
-                      }}>
-                      <i className="fas fa-times"></i>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <label htmlFor="basic-url">Title</label>
-            <InputGroup className="mb-3">
-              <input
-                className="form-control"
-                value={uploadForm.title}
-                placeholder="12345 Example St."
-                onChange={(e) => {
-                  handleFormChange(e.target.value, 'title')
-                }}
-              />
-            </InputGroup>
-
-            <Form.Group controlId="exampleForm.ControlTextarea1">
-              <Form.Label>Details</Form.Label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={uploadForm.desc}
-                placeholder="12345 Example St."
-                onChange={(e) => {
-                  handleFormChange(e.target.value, 'desc')
-                }}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="exampleForm.ControlTextarea1">
-              <Form.Label>Bedrooms</Form.Label>
-              <input
-                className="form-control"
-                type="number"
-                min="1"
-                max="10"
-                value={uploadForm.br}
-                onChange={(e) => {
-                  handleFormChange(e.target.value, 'br')
-                }}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="exampleForm.ControlTextarea1">
-              <Form.Label>Bathrooms</Form.Label>
-              <input
-                className="form-control"
-                type="number"
-                min="1"
-                max="10"
-                value={uploadForm.ba}
-                onChange={(e) => {
-                  handleFormChange(e.target.value, 'ba')
-                }}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="exampleForm.ControlTextarea1">
-              <Form.Label>List Price</Form.Label>
-              <InputGroup>
-                <InputGroup.Prepend>
-                  <InputGroup.Text id="basic-addon1">$</InputGroup.Text>
-                </InputGroup.Prepend>
-                <input
-                  className="form-control"
-                  value={uploadForm.price}
-                  onChange={(e) => {
-                    handleFormChange(e.target.value, 'price')
-                  }}
-                />
-              </InputGroup>
-            </Form.Group>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelUpload}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleUpload}>
-            Upload
-          </Button>
-        </Modal.Footer>
-      </Modal> */}
-
+      {/* Property Upload/Edit Modal */}
+      {user &&
+        <UploadModal show={showModal}
+          setShowModal={setShowModal}
+          editingItem={editingItem}
+          setEditingItem={setEditingItem} />
+      }
+      
       {/* Item deletion confirmation */}
       <Modal
         show={showDeleteConfirmation}

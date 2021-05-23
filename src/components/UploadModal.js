@@ -10,7 +10,6 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Form from 'react-bootstrap/Form'
 
 export default function UploadModal(props) {
-  var user = useContext(UserContext)
   // Image upload progress bar
   const [imageUploadProgress, setImageUploadProgress] = useState(0)
   const [uploadForm, setUploadForm] = useState({
@@ -22,11 +21,12 @@ export default function UploadModal(props) {
     ba: 0,
     price: 0
   })
-  const [editingItem, setEditingItem] = useState(props.editingItem || false)
 
   // Update form on props change (editing an item).
   useEffect(() => {
+    // console.log('%cProps updated!', 'color:yellow')
     if (props.editingItem) setUploadForm(props.editingItem)
+    else wipeForm()
   }, [props.editingItem])
 
 
@@ -79,9 +79,10 @@ export default function UploadModal(props) {
   }
   // Delete all draft images and wipe form.
   const handleCancelUpload = async () => {
-    if (!editingItem) {
+    if (!props.editingItem) {
       // Cleanup any uploaded images first to preserve storage
-      uploadForm.imageURLs.forEach(url => cancelUploadImage(url))
+      if (uploadForm.imageURLs) {}
+        uploadForm.imageURLs.forEach(url => cancelUploadImage(url))
       wipeForm()
       props.setShowModal(false)
     } else {
@@ -96,43 +97,43 @@ export default function UploadModal(props) {
       desc: '',
       br: 0,
       ba: 0,
-      price: 0
+      price: 0,
+      imageNames: [],
+      imageURLs: []
     })
   }
   // Create record or Update if editing.
   const handleUpload = async () => {
-    if (editingItem) await firestore.collection('properties').doc(editingItem.id).set(uploadForm)
+    if (props.editingItem) await firestore.collection('properties').doc(props.editingItem.id).set(uploadForm)
     else await firestore.collection('properties').add(uploadForm)
     props.setShowModal(false)
     wipeForm()
-    setEditingItem(false)
   }
 
   return (
-    <Modal show={props.show} onHide={() => props.setShowModal(false)} dialogClassName="upload-modal">
+    <Modal show={props.show}
+      onHide={() => { props.setEditingItem(false); props.setShowModal(false) }}
+      dialogClassName="upload-modal">
       <Modal.Header closeButton>
         <Modal.Title>Add/Edit a Property</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <div className="add-property-form">
-          
-          <div className="">
-            <label className="img-upload-label">
-              <FileUploader
-                hidden
-                accept="image/*"
-                name="propertyImg"
-                randomizeFilename
-                storageRef={store.ref('images')}
-                onProgress={handleUploadProgress}
-                onUploadSuccess={handleImageUploadSuccess}
-                onError={(error) => { console.log(error) }} />
-              <div className="img-upload-btn"></div>
-              <p>Upload Image(s)</p>
-            </label>
-            <div className="img-progress" style={{ width: imageUploadProgress + '%' }}></div>
-          </div>
+          <label className="img-upload-label">
+            <FileUploader
+              hidden
+              accept="image/*"
+              name="propertyImg"
+              randomizeFilename
+              storageRef={store.ref('images')}
+              onProgress={handleUploadProgress}
+              onUploadSuccess={handleImageUploadSuccess}
+              onError={(error) => { console.log(error) }} />
+            <div className="img-upload-btn"></div>
+            <p>Upload Image(s)</p>
+          </label>
+          <div className="img-progress" style={{ width: imageUploadProgress + '%' }}></div>
 
           <div className="uploading-images">
             {uploadForm.imageURLs?.map((src, index) => {

@@ -30,10 +30,12 @@ export default function Property(props) {
   return (
     <>
       <Helmet>
-        <meta property="og:url"                content="http://www.nytimes.com/2015/02/19/arts/international/when-great-minds-dont-think-alike.html" />
+        <title>{ property?.title || 'View Property'}</title>
+        <meta name="description" content={ property?.desc || 'Beautiful homes Available Now!'} />
+        {/* <meta property="og:url"                content="beer-properties.vercel.app" /> */}
         <meta property="og:type"               content="article" />
-        <meta property="og:title"              content={ property?.title || ''} />
-        <meta property="og:description"        content={ property?.desc || ''} />
+        <meta property="og:title"              content={ property?.title || 'View Property'} />
+        <meta property="og:description"        content={ property?.desc || 'Beautiful homes Available Now!'} />
         <meta property="og:image"              content={ property?.imageURLs[0] || '' } />
       </Helmet>
       

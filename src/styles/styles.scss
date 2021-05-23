@@ -90,6 +90,7 @@ a:hover { text-decoration: none; }
       }
 
       .card-body-fade {
+        display: block;
         position: relative;
         line-height: 1.2em;
         height: 3.6em; /* exactly three lines */
